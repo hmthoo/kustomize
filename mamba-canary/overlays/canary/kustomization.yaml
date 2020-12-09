@@ -1,0 +1,14 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+- ../../base
+images:
+- name: harbor.xxx.com/mamba
+  newName: harbor.xxx.com/mamba
+  newTag: "202011291143"
+namespace: canary
+patchesStrategicMerge:
+- volumes_patch.yaml
+
+transformers:
+- labels.yaml

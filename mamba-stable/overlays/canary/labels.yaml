@@ -1,0 +1,21 @@
+apiVersion: builtin
+kind: LabelTransformer
+metadata:
+  name: notInSelector
+labels:
+  app: mamba
+  version: stable
+  product: saas-pro
+fieldSpecs:
+- path: metadata/labels
+  create: true
+  kind: Deployment
+- path: spec/selector/matchLabels
+  create: true
+  kind: Deployment
+- path: spec/template/metadata/labels
+  create: true
+  kind: Deployment
+- path: metadata/labels
+  create: false
+  kind: Service

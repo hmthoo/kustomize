@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+ name: stable-mamba
+spec:
+ replicas: 1
+ template:
+  spec:
+   serviceAccountName: mamba
+   securityContext:
+    runAsUser: 1001
+    fsGroup: 1001
+   initContainers:
+    - name: war
+      image: harbor.xxx.com/mamba:202008071735
+      imagePullPolicy: Always
+      command: ["sh", "-c", "unzip /mamba.war -d /data/app ; cat /data/config/bootstrap.properties > /data/app/WEB-INF/classes/bootstrap.properties"]
+      volumeMounts:
+        - name: app-volume
+          mountPath: /data/app
+        - name: config
+          mountPath: /data/config    
+   imagePullSecrets:
+   - name: harbor-secret  
+   containers: 
+   - name: mamba
+     image: harbor.xxx.com/mamba/centos-tomcat9-8:v1.0.5
+     imagePullPolicy: IfNotPresent
+     resources:
+       limits:
+         memory: 2Gi
+       requests:
+         memory: 500Mi
+     env:
+        - name: POD_IP
+          valueFrom:
+            fieldRef: 
+              fieldPath: status.podIP
+        - name: POD_NAME
+          valueFrom:
+            fieldRef: 
+              fieldPath: metadata.name
+        - name: JAVA_OPTS
+          value: "-Duser.timezone=GMT+08 -Xmx2048M -Xms2048M -Xmn768M -XX:MaxMetaspaceSize=256M -XX:MetaspaceSize=256M"
+     ports:
+     - containerPort: 8080
+       name: http
+     - containerPort: 5001
+       name: jmxport
+     - containerPort: 8000
+       name: jpda
+     volumeMounts:
+      - name: logdir
+        mountPath: /data/tomcat/logs
+      - name: app-volume
+        mountPath: /data/app/
+      - name: mambafile
+        mountPath: /data/file/mambafile
+   volumes:
+   - name: logdir
+     emptyDir: {} 
+   - name: app-volume
+     emptyDir: {}
+   - name: config
+     configMap: 
+      name: bootstrap.properties
+      items:
+        - key: bootstrap.properties
+          path: bootstrap.properties
+   - name: "mambafile"
+     persistentVolumeClaim:
+       claimName: mambafile

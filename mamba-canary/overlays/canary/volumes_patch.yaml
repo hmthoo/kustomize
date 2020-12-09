@@ -1,0 +1,11 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+ name: mamba
+spec:
+  template:
+    spec:
+      volumes:
+        - name: "mambafile"
+          persistentVolumeClaim:
+            claimName: mambafile
