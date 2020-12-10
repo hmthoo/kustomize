@@ -9,8 +9,6 @@ images:
 namespace: canary
 #- affinity_patch.yaml
 patchesStrategicMerge:
-- env_patch.yaml
-- memorylimit_patch.yaml
 - volumes_patch.yaml
 
 transformers:
