@@ -3,8 +3,8 @@ kind: Kustomization
 resources:
 - ../../base
 images:
-- name: harbor.zhoupu123.com/ygjpro/mamba
-  newName: harbor.zhoupu123.com/ygjpro/mamba
+- name: harbor.xxx.com/ygjpro/mamba
+  newName: harbor.xxx.com/ygjpro/mamba
   newTag: "202011291143"
 namespace: canary
 #- affinity_patch.yaml
